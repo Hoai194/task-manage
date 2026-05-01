@@ -1,0 +1,90 @@
+INTERNET AND WEB SERVICES – SPRING 2026
+Final Project Specification
+
+1. Project Overview and Academic Objectives
+The capstone project for the Internet and Web Services course necessitates the design, development and deployment of a distributed software system. Students are required to architect a backend system exposing a RESTful Application Programming Interface (API) and a decoupled client application (frontend) that seamlessly consumes these web services.
+The domain of the application is at the discretion of the project group (e.g., e-commerce platform, content management system, educational portal). However, the development or facilitation of illicit platforms (including but not limited to gambling, explicit content, narcotics, or weaponry) is strictly prohibited and will result in immediate academic penalization.
+Core Deliverables:
+1.	Backend Web Services: A robust, REST-compliant API facilitating secure and efficient interactions with an underlying database system.
+2.	Client Application: A dedicated frontend application (web or mobile) engineered to dynamically consume the backend web services. While Windows Form applications are technically permissible, modern web or mobile applications are highly recommended to align with contemporary industry standards.
+2. Technical and Functional Requirements
+2.1. Backend API Functionality
+The backend architecture must strictly adhere to RESTful principles. The API must implement full CRUD (Create, Read, Update, Delete) operations, utilizing the appropriate HTTP request methods:
+●	GET: For retrieving and transmitting data from the database to the client.
+●	POST: For securely capturing and inserting new data payloads into the database.
+●	PUT/PATCH: For modifying or updating existing data records.
+●	DELETE: For the permanent or soft removal of specific data records.
+In addition to foundational CRUD operations, the backend API must be engineered to support the following advanced capabilities:
+●	Security: Endpoints modifying data or accessing protected resources must be secured using robust authentication and authorization protocols (e.g., JWT, Session-based auth). Furthermore, strict input validation and sanitization must be enforced on all incoming payloads to mitigate vulnerabilities such as SQL Injection and Cross-Site Scripting (XSS).
+●	Sorting: Endpoints returning collections of data must accept query parameters enabling dynamic sorting. Clients must be able to specify the field by which to order the results and the direction of the sort (ascending or descending).
+●	Pagination: To ensure scalability, optimize database query performance, and prevent excessive network payload sizes, server-side pagination (e.g., limit/offset or cursor-based) must be implemented on all GET endpoints that return multi-record datasets.
+2.2. Client Application Integration
+The client application must successfully and robustly consume all developed API endpoints. Data retrieved from the backend must be rendered accurately within the user interface. Furthermore, the client must provide intuitive mechanisms (forms, interactive elements) allowing users to submit new data, modify existing entries, and execute deletion requests, ensuring bidirectional data flow between the client and the database.
+2.3. Technology Stack
+●	Programming Languages: Students possess the autonomy to select any appropriate backend language (e.g., Java, Python, Node.js/JavaScript, PHP) commensurate with their technical proficiency.
+●	Databases: Both Relational (SQL) and Non-Relational (NoSQL) database management systems are acceptable.
+●	Frameworks: The utilization of standard frameworks and libraries to expedite development and enforce structural integrity is strongly encouraged.
+2.4. User Interface (UI) and User Experience (UX)
+The frontend must exhibit a highly user-friendly interface optimized for usability. For web-based applications, strict adherence to responsive web design principles is mandatory, ensuring seamless adaptation across disparate device viewports and screen resolutions.
+3. Project Administration
+●	Group Composition: 3 - 4 students per group.
+●	Final Submission Deadline: Will be announced later
+●	Project Defense/Interview Date: Will be announced later
+Strict Submission Protocol:
+Submissions must be encapsulated within a single .zip archive containing the entirety of the project's source code and the requisite personal reports from all group members.
+●	Mandatory Naming Convention: FinalProjectIWS2025IT – Group [Number].zip
+○	Example: FinalProjectIWS2025IT – Group 6.zip
+●	Penalty: Deviations from the specified file format or naming convention will result in an automatic grade of zero (0).
+
+
+
+APPENDIX A: Detailed Evaluation Rubric
+The project evaluation is delineated into four strict academic tiers: Fail, Pass, Merit, and Excellent.
+1. FAIL RANGE (Unsatisfactory: < 50%)
+A project will be categorized as a failure if it exhibits any of the following critical deficiencies:
+●	Architectural Non-Compliance: Implementation of a non-RESTful architecture (e.g., defaulting to standard MVC without API separation, MVT, or legacy SOAP protocols).
+●	Academic Dishonesty: Detection of plagiarized code via automated scanning systems.
+●	Procedural Failure: Failure to attend the mandatory project interview/defense session.
+●	Format Violation: Submission of an incorrect file type (non-.zip archive).
+●	Tardy Submission: Late submissions will incur an immediate, non-negotiable deduction of 30% from the total achievable mark, potentially resulting in a failing grade.
+●	Database Disconnection: Failure to establish a successful, persistent connection between the backend system and the database infrastructure.
+2. PASS RANGE (Adequate: 50% - 64%)
+To achieve a baseline passing grade, the project must demonstrate functional competency in the following areas:
+●	Backend Architecture: Must provide a fully functional REST API supporting comprehensive CRUD operations (Create, Read, Update, Delete) with standard JSON/XML data formatting.
+○	Security Baseline: Must implement basic input validation to prevent application crashes from malformed data.
+○	Note on Serverless/BaaS: The utilization of Serverless architectures or Backend-as-a-Service (e.g., Firebase, GraphQL) is permitted. However, the core grading objective remains the demonstration of RESTful API principles. Over-reliance on BaaS abstractions that obscure fundamental API mechanics may negatively impact evaluation if REST requirements are not explicitly met.
+●	Database Integration: The database (whether hosted locally or via cloud infrastructure) must integrate flawlessly with the backend APIs.
+●	Frontend Integration: The client application must successfully request and parse data from the API. It must process user input securely via forms and transmit this data via POST/PUT requests without generating standard runtime errors or CORS (Cross-Origin Resource Sharing) policy violations. Unpaginated data rendering is acceptable at this tier provided datasets are small.
+●	Interface Integrity: The application must present a coherent user interface devoid of broken assets (images, icons), severe layout shifts, or illegible typography.
+3. MERIT RANGE (Proficient: 65% - 84%)
+To attain a Merit distinction, the project must fulfill all Pass criteria and incorporate the following advanced implementations:
+●	Mandatory Security & Authentication (Backend): The backend MUST implement a robust user authentication pipeline. This strictly includes functional modules for User Registration, User Login, and Password Recovery (Forgot Password). Cryptographic hashing of user credentials and the use of secure tokens (e.g., JWT) for protected API routes are strictly expected.
+●	Server-Side Sorting & Pagination: APIs returning collections of data MUST successfully implement dynamic server-side sorting and pagination. The client application must provide intuitive UI controls (e.g., pagination buttons, infinite scroll, sortable table headers) to interact with these endpoint capabilities seamlessly.
+●	Advanced Frontend Engineering: Pure, vanilla HTML/CSS/JS is insufficient for this tier. Students must utilize modern, industry-standard frameworks and libraries.
+○	Web Applications: Must employ modern CSS frameworks (e.g., TailwindCSS, Bootstrap) and/or robust JavaScript frameworks (e.g., ReactJS, VueJS, Angular). The interface must be strictly responsive, exhibiting negligible layout degradation across various simulated device resolutions. Component hierarchies (Headers, Body, Footers) must be modularly structured and correctly sequenced.
+○	Mobile Applications: Drag-and-drop generation is discouraged. Must utilize programmatic frameworks such as Flutter, React Native, Swift, or Kotlin. The application must exhibit high-performance UI rendering, ensuring fluid state transitions, optimized scroll performance, and logically sequenced child widgets.
+4. EXCELLENT RANGE (Exceptional: 85% - 100%)
+Projects in this tier represent professional-grade software development. They must encompass all Merit requirements and excel in the following dimensions:
+●	Code Quality and Architecture: The codebase must exhibit exceptional structural integrity. Strict adherence to recognized coding conventions, design patterns, and naming conventions is required. The code must be self-documenting and highly maintainable.
+●	Advanced API Engineering: Implementation of advanced backend concepts such as API rate limiting, strict and secure CORS configuration, and dynamic, multi-parameter filtering alongside sorting and pagination. Mitigation of common OWASP top 10 vulnerabilities must be clearly demonstrable.
+●	Technical Defense and Presentation: During the interview session, the group must deliver an articulate, comprehensive presentation. Members must demonstrate a profound, theoretical, and practical understanding of their chosen technology stack. All members must be capable of confidently and accurately addressing complex technical inquiries from the examination panel and peer groups.
+
+
+APPENDIX B: Individual Documentation Protocol (Personal Report)
+Each group member is strictly required to submit a comprehensive Personal Report detailing their individual contributions.
+1. Administrative Information
+●	Full Legal Name
+●	Student Identification Number
+●	Enrolled Class Name
+●	Assigned Group Number
+●	Format Example: Tran Ngoc Khoa – 1801040121 – 1C18 – Group 6
+2. Macro-Level Project Abstract
+●	Provide a concise executive summary of the project's core domain and primary objectives.
+●	Enumerate the flagship functions and services provided by the application.
+●	Detail the complete technology stack utilized (specifying all languages, libraries, frameworks, and deployment environments).
+3. Micro-Level Individual Contribution Analysis
+●	Task Allocation: Provide a granular, technical explanation of the specific modules, components, or services you personally engineered.
+●	Collaborative Transparency: If a specific component was co-developed, you must meticulously cite your collaborators and delineate your exact portion of the workload. Failure to appropriately attribute collaborative work will result in report rejection.
+●	Applied Technologies: Specify which elements of the broader technology stack you utilized to execute your assigned tasks.
+●	Mandatory Visual Evidence: You must provide high-resolution screenshots validating your contributions. This includes API testing outputs (e.g., Postman interfaces for backend developers), UI/UX renderings (for frontend developers), or database schemas/queries (for database administrators).
+○	Strict Penalty: Failure to embed visual evidence of your work within the report will result in an immediate, non-negotiable 60% deduction from your individual report grade.

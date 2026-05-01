@@ -4,6 +4,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  toggleTask,
 
   createSubTask,
   toggleSubTask,
@@ -21,6 +22,7 @@ taskRouter.get('/', getTasks);
 taskRouter.post('/', createTask);        
 taskRouter.put('/:id', updateTask);      
 taskRouter.delete('/:id', deleteTask);   
+taskRouter.patch('/:id/toggle', toggleTask);
 
 
 // Sub tasks

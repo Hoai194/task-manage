@@ -1,0 +1,495 @@
+:root {
+  --ink: #1d1a15;
+  --muted: #756d62;
+  --paper: #fffaf0;
+  --line: rgba(29, 26, 21, 0.14);
+  --gold: #f2b842;
+  --orange: #df7047;
+  --green: #2f8d6c;
+  --blue: #2d6e9f;
+  --shadow: 0 24px 70px rgba(54, 38, 14, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family: "Trebuchet MS", "Avenir Next", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(242, 184, 66, 0.42), transparent 34rem),
+    radial-gradient(circle at 82% 12%, rgba(47, 141, 108, 0.22), transparent 30rem),
+    linear-gradient(135deg, #fff7df 0%, #f3dfbc 48%, #ead0a9 100%);
+}
+
+button {
+  min-height: 38px;
+}
+
+.auth-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(320px, 430px);
+  gap: 28px;
+  align-items: center;
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.hero-panel,
+.auth-card,
+.app-header,
+.panel-card,
+.composer-card,
+.toolbar-card,
+.task-card,
+.empty-state {
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 56px);
+  padding: clamp(32px, 6vw, 64px);
+  border-radius: 38px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.9), rgba(255, 238, 184, 0.72)),
+    repeating-linear-gradient(0deg, transparent 0 32px, rgba(29, 26, 21, 0.05) 33px 34px);
+}
+
+.hero-panel::before {
+  content: "";
+  position: absolute;
+  top: 52px;
+  right: 58px;
+  width: 230px;
+  height: 230px;
+  border-radius: 42px;
+  background: var(--gold);
+  box-shadow: -62px 72px 0 rgba(47, 141, 108, 0.34), -128px 10px 0 rgba(223, 112, 71, 0.28);
+  transform: rotate(8deg);
+}
+
+.hero-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  color: var(--green);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero-panel h1,
+.app-header h1 {
+  max-width: 720px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3.2rem, 9vw, 7rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  line-height: 0.88;
+}
+
+.lead-copy {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 1.12rem;
+  line-height: 1.7;
+}
+
+.feature-strip,
+.tag-cloud,
+.tag-selector,
+.header-actions,
+.task-actions,
+.pagination-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.feature-strip span,
+.profile-chip,
+.tag-pill,
+.status-badge,
+.tag-choice {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.78);
+}
+
+.feature-strip span {
+  padding: 10px 14px;
+  font-weight: 800;
+}
+
+.auth-card {
+  padding: 28px;
+  border-radius: 30px;
+  background: rgba(255, 250, 240, 0.88);
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.app-header,
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+.app-header {
+  margin-bottom: 24px;
+  padding: 22px 26px;
+  border-radius: 30px;
+  background: rgba(255, 250, 240, 0.8);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 5vw, 4.4rem);
+}
+
+.header-actions {
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.profile-chip,
+.tag-pill,
+.status-badge,
+.tag-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  font-weight: 800;
+}
+
+.sidebar-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.panel-card,
+.composer-card,
+.toolbar-card {
+  padding: 20px;
+  border-radius: 28px;
+  background: rgba(255, 250, 240, 0.8);
+}
+
+.panel-heading,
+.toolbar-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.panel-heading h2,
+.section-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.panel-heading span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #1f1608;
+  font-weight: 900;
+  background: var(--gold);
+}
+
+.project-row-wrap {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.project-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 12px;
+  color: var(--ink);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.project-row.active {
+  border-color: rgba(223, 112, 71, 0.58);
+  background: rgba(223, 112, 71, 0.15);
+}
+
+.project-row small {
+  display: block;
+  color: var(--muted);
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pill-button {
+  border: 0;
+  min-height: 0;
+  padding: 0 2px;
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 900;
+  background: transparent;
+}
+
+.pill-button.danger {
+  color: #a03520;
+}
+
+.composer-card {
+  margin-bottom: 18px;
+}
+
+.tag-choice {
+  color: var(--ink);
+}
+
+.tag-choice.active {
+  border-color: rgba(47, 141, 108, 0.58);
+  color: #114633;
+  background: rgba(47, 141, 108, 0.16);
+}
+
+.toolbar-card {
+  margin-bottom: 18px;
+}
+
+.toolbar-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 160px 150px 150px;
+  gap: 10px;
+  flex: 1;
+  max-width: 820px;
+}
+
+.task-grid {
+  columns: 3 280px;
+  column-gap: 18px;
+}
+
+.task-card {
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  margin: 0 0 18px;
+  padding: 18px;
+  border-radius: 26px;
+  background: rgba(255, 250, 240, 0.9);
+  animation: rise 320ms ease both;
+}
+
+.task-card.priority-high {
+  background: linear-gradient(145deg, rgba(255, 250, 240, 0.95), rgba(223, 112, 71, 0.16));
+}
+
+.task-card.is-done {
+  opacity: 0.72;
+}
+
+.task-card h3 {
+  margin: 14px 0 8px;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.task-card p {
+  color: var(--muted);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.status-badge {
+  font-size: 0.76rem;
+  text-transform: capitalize;
+}
+
+.status-badge.high {
+  color: #8b2a13;
+  background: rgba(223, 112, 71, 0.16);
+}
+
+.status-badge.medium {
+  color: #725100;
+  background: rgba(242, 184, 66, 0.22);
+}
+
+.status-badge.low {
+  color: #185d46;
+  background: rgba(47, 141, 108, 0.16);
+}
+
+.subtask-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.subtask-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.subtask-row.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.task-actions {
+  align-items: center;
+  margin-top: 14px;
+}
+
+.task-actions .form-select {
+  width: 140px;
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: 30px;
+  border-radius: 28px;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(255, 250, 240, 0.62);
+}
+
+.empty-mini {
+  padding: 14px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.pagination-wrap {
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 24px;
+}
+
+.app-footer {
+  margin-top: 18px;
+  padding: 18px 4px 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.toast-message {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 20;
+  max-width: min(360px, calc(100vw - 44px));
+  padding: 14px 16px;
+  border-radius: 16px;
+  color: var(--paper);
+  background: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1100px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-panel {
+    min-height: 420px;
+  }
+
+  .toolbar-card,
+  .app-header,
+  .app-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar-controls {
+    grid-template-columns: 1fr 1fr;
+    max-width: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-page,
+  .app-shell {
+    padding: 14px;
+  }
+
+  .hero-panel,
+  .auth-card,
+  .app-header,
+  .panel-card,
+  .composer-card,
+  .toolbar-card,
+  .task-card {
+    border-radius: 22px;
+  }
+
+  .hero-panel::before {
+    opacity: 0.42;
+  }
+
+  .toolbar-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .task-actions,
+  .row-actions,
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .task-actions .form-select {
+    width: 100%;
+  }
+}

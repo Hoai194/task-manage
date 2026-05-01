@@ -27,6 +27,7 @@ const taskSchema = new Schema(
         created_at: { type: Date, default: Date.now },
       },
     ],
+    tags: [{ type: Types.ObjectId, ref: "Tag" }],
     subtasks: [subTaskSchema],
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
