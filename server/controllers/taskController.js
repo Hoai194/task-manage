@@ -25,24 +25,32 @@ export const getTasks = async (req, res) => {
 
     const safeSortBy = ALLOWED_SORT_FIELDS.has(sort_by) ? sort_by : "created_at";
 
-    const result = await paginate(Task, {
-      filter,
-      sort_by: safeSortBy,
-      sort_order,
-      page,
-      limit: limit || 100,
-      populate: "tags",
-    });
+    let data;
+    let total;
+
+    if (page) {
+      const result = await paginate(Task, {
+        filter,
+        sort_by: safeSortBy,
+        sort_order,
+        page,
+        limit: limit || 20,
+        populate: "tags",
+      });
+      data = result.data;
+      total = result.total;
+    } else {
+      data = await Task.find(filter)
+        .sort({ [safeSortBy]: sort_order === "asc" ? 1 : -1 })
+        .populate("tags")
+        .lean();
+      total = data.length;
+    }
 
     res.json({
       success: true,
-      data: result.data,
-      meta: {
-        total: result.total,
-        page: result.page,
-        limit: result.limit,
-        total_pages: result.total_pages,
-      },
+      data,
+      meta: { total },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -150,6 +158,10 @@ export const toggleSubTask = async (req, res) => {
     const subtask = task.subtasks.id(subId);
     if (!subtask) return res.status(404).json({ success: false, message: "Subtask not found" });
 
+    if (task.status === "done") {
+      return res.status(400).json({ success: false, message: "Cannot toggle subtask of a completed task" });
+    }
+
     subtask.is_done = !subtask.is_done;
     await task.save();
 
@@ -169,6 +181,10 @@ export const updateSubTask = async (req, res) => {
 
     const subtask = task.subtasks.id(subId);
     if (!subtask) return res.status(404).json({ success: false, message: "Subtask not found" });
+
+    if (task.status === "done" && is_done !== undefined) {
+      return res.status(400).json({ success: false, message: "Cannot update subtask status of a completed task" });
+    }
 
     if (title   !== undefined) subtask.title   = title;
     if (is_done !== undefined) subtask.is_done = is_done;
@@ -206,8 +222,18 @@ export const getTasksByDateRange = async (req, res) => {
   try {
     const { project_id, start, end } = req.query;
 
-    if (!project_id) return res.status(400).json({ success: false, message: "project_id is required" });
     if (!start || !end) return res.status(400).json({ success: false, message: "start and end date are required" });
+
+    const filter = {
+      status: { $ne: "done" },
+    };
+
+    if (project_id && project_id !== "all") {
+      filter.project_id = project_id;
+    } else {
+      const projects = await Project.find({ user_id: req.userId }).select("_id").lean();
+      filter.project_id = { $in: projects.map((p) => p._id) };
+    }
 
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -215,8 +241,7 @@ export const getTasksByDateRange = async (req, res) => {
     // Lấy task có start_date hoặc due_date nằm trong range,
     // hoặc task kéo dài qua toàn bộ range (start trước, end sau)
     const tasks = await Task.find({
-      project_id,
-      status: { $ne: "done" },
+      ...filter,
       $or: [
         { due_date:   { $gte: startDate, $lte: endDate } },
         { start_date: { $gte: startDate, $lte: endDate } },

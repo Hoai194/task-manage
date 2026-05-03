@@ -12,6 +12,7 @@ export default function AuthView({ onSubmit, onError }) {
     setBusy(true);
     try {
       await onSubmit(values, mode);
+      if (mode === "register") setMode("login");
     } catch (error) {
       onError(error.message);
     } finally {
@@ -25,14 +26,14 @@ export default function AuthView({ onSubmit, onError }) {
         <p className="eyebrow">Personal Task Manager</p>
         <h1>Capture tasks before they scatter.</h1>
         <p className="lead-copy">
-          A Google Keep inspired workspace with projects, notes, tags, subtasks,
-          priorities, due dates, sorting, and responsive layouts.
+          The ultimate workspace for organizing projects, tasks, and deadlines.
+          Experience seamless task management with industrial-grade tools.
         </p>
         <div className="feature-strip">
-          <span>React components</span>
-          <span>Bootstrap grid</span>
-          <span>JWT auth</span>
-          <span>REST API</span>
+          <span>Project Pipelines</span>
+          <span>Intelligent Tags</span>
+          <span>Advanced Filtering</span>
+          <span>Daily Schedule</span>
         </div>
       </section>
 
@@ -58,16 +59,16 @@ export default function AuthView({ onSubmit, onError }) {
           {mode === "register" && (
             <label className="form-label">
               Name
-              <input className="form-control form-control-lg mt-2" name="name" required />
+              <input className="form-control form-control-lg mt-2" name="name" placeholder="Your full name" required />
             </label>
           )}
           <label className="form-label">
             Email
-            <input className="form-control form-control-lg mt-2" name="email" type="email" required />
+            <input className="form-control form-control-lg mt-2" name="email" type="email" placeholder="name@example.com" required />
           </label>
           <label className="form-label">
             Password
-            <input className="form-control form-control-lg mt-2" name="password" type="password" minLength="6" required />
+            <input className="form-control form-control-lg mt-2" name="password" type="password" minLength="6" placeholder="Minimum 6 characters" required />
           </label>
           <button className="btn btn-warning btn-lg fw-bold" disabled={busy} type="submit">
             {busy ? "Working..." : mode === "login" ? "Enter workspace" : "Create account"}

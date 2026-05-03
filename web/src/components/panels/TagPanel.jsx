@@ -23,18 +23,35 @@ export default function TagPanel({
   onError,
   tagPage,
   tagTotalPages,
+  tagTotal,
   onTagPageChange,
 }) {
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [editingTagId, setEditingTagId] = useState(null);
+  const [editingName, setEditingName] = useState("");
 
   const handleCreate = async (name) => {
     await onCreateTag({ name });
   };
 
-  const renameTag = async (tag) => {
-    const name = window.prompt("Tag name", tag.name);
-    if (!name) return;
-    await onUpdateTag(tag._id, { name });
+  const startEditing = (tag) => {
+    setEditingTagId(tag._id);
+    setEditingName(tag.name);
+  };
+
+  const saveRename = async (tag) => {
+    const trimmed = editingName.trim();
+    if (!trimmed || trimmed === tag.name) {
+      setEditingTagId(null);
+      return;
+    }
+    try {
+      await onUpdateTag(tag._id, { name: trimmed });
+    } catch (error) {
+      onError(error.message);
+    } finally {
+      setEditingTagId(null);
+    }
   };
 
   const confirmDelete = async () => {
@@ -53,7 +70,6 @@ export default function TagPanel({
       <section className="panel-card">
         <div className="panel-heading">
           <h2>Tags</h2>
-          <span>{tags.length}</span>
         </div>
 
         <QuickCreateForm placeholder="New tag" onSubmit={handleCreate} onError={onError} />
@@ -61,8 +77,27 @@ export default function TagPanel({
         <div className="tag-cloud">
           {tags.map((tag) => (
             <span className="tag-pill" key={tag._id}>
-              #{tag.name}
-              <button className="pill-button" type="button" onClick={() => renameTag(tag).catch((error) => onError(error.message))}>
+              {editingTagId === tag._id ? (
+                <input
+                  autoFocus
+                  className="form-control form-control-sm d-inline-block"
+                  style={{ width: "80px", height: "24px", padding: "2px 4px", fontSize: "0.75rem" }}
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  onBlur={() => saveRename(tag)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveRename(tag);
+                    if (e.key === "Escape") setEditingTagId(null);
+                  }}
+                />
+              ) : (
+                <>#{tag.name}</>
+              )}
+              <button
+                className="pill-button"
+                type="button"
+                onClick={() => startEditing(tag)}
+              >
                 edit
               </button>
               <button className="pill-button danger" type="button" onClick={() => setPendingDelete(tag)}>

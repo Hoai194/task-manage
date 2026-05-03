@@ -62,18 +62,17 @@ export default function TaskCard({
         <div className="subtask-stack">
           {(task.subtasks || []).map((subtask) => (
             <div className={`subtask-row ${subtask.is_done ? "done" : ""}`} key={subtask._id}>
-              <button
-                className="btn btn-sm btn-outline-dark"
-                disabled={busy}
-                type="button"
-                onClick={() => run(() => onToggleSubtask(task._id, subtask._id))}
-              >
-                {subtask.is_done ? "Undo" : "Done"}
-              </button>
-              <span>{subtask.title}</span>
+              <input
+                type="checkbox"
+                className="form-check-input"
+                checked={subtask.is_done}
+                disabled={busy || task.status === "done"}
+                onChange={() => run(() => onToggleSubtask(task._id, subtask._id))}
+              />
+              <span style={{ marginLeft: "8px", flex: 1 }}>{subtask.title}</span>
               <button
                 className="btn btn-sm btn-outline-danger"
-                disabled={busy}
+                disabled={busy || task.status === "done"}
                 type="button"
                 onClick={() => run(() => onDeleteSubtask(task._id, subtask._id))}
               >
@@ -86,11 +85,12 @@ export default function TaskCard({
         <form className="input-group input-group-sm mt-3" onSubmit={addSubtask}>
           <input
             className="form-control"
-            placeholder="Add subtask"
+            placeholder={task.status === "done" ? "Task is completed" : "Add subtask"}
             value={subtaskTitle}
+            disabled={busy || task.status === "done"}
             onChange={(event) => setSubtaskTitle(event.target.value)}
           />
-          <button className="btn btn-outline-dark" disabled={busy} type="submit">
+          <button className="btn btn-outline-dark" disabled={busy || task.status === "done"} type="submit">
             Add
           </button>
         </form>
@@ -98,7 +98,7 @@ export default function TaskCard({
         <div className="task-actions">
           <select
             className="form-select form-select-sm"
-            disabled={busy}
+            disabled={busy || task.status === "done"}
             value={task.status}
             onChange={(event) => run(() => onUpdateTask(task._id, { status: event.target.value }))}
           >
@@ -106,13 +106,23 @@ export default function TaskCard({
             <option value="in_progress">In progress</option>
             <option value="done">Done</option>
           </select>
-          <button className="btn btn-sm btn-outline-dark" disabled={busy} type="button" onClick={() => setEditing(true)}>
+          <button
+            className="btn btn-sm btn-outline-dark"
+            disabled={busy || task.status === "done"}
+            type="button"
+            onClick={() => setEditing(true)}
+          >
             Edit
           </button>
           <button className="btn btn-sm btn-warning fw-bold" disabled={busy} type="button" onClick={() => run(() => onToggleTask(task._id))}>
             {task.status === "done" ? "Reopen" : "Complete"}
           </button>
-          <button className="btn btn-sm btn-outline-danger" disabled={busy} type="button" onClick={() => run(() => onDeleteTask(task._id))}>
+          <button
+            className="btn btn-sm btn-outline-danger"
+            disabled={busy || task.status === "done"}
+            type="button"
+            onClick={() => run(() => onDeleteTask(task._id))}
+          >
             Delete
           </button>
         </div>

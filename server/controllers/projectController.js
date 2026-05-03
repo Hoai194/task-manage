@@ -1,4 +1,5 @@
 import Project from '../models/projectModel.js';
+import Task from '../models/taskModel.js';
 import { paginate } from '../utils/paginate.js';
 
 export const getProjects = async (req, res) => {
@@ -11,9 +12,24 @@ export const getProjects = async (req, res) => {
       page,
       limit: limit || 20,
     });
+
+    const projectIds = result.data.map(p => p._id);
+    const counts = await Task.aggregate([
+      { $match: { project_id: { $in: projectIds } } },
+      { $group: { _id: '$project_id', count: { $sum: 1 } } }
+    ]);
+
+    const countMap = {};
+    counts.forEach(c => countMap[c._id.toString()] = c.count);
+
+    const dataWithCounts = result.data.map(p => ({
+      ...p,
+      task_count: countMap[p._id.toString()] || 0
+    }));
+
     res.json({
       success: true,
-      data: result.data,
+      data: dataWithCounts,
       meta: { total: result.total, page: result.page, limit: result.limit, total_pages: result.total_pages },
     });
   } catch (error) {

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
-function EditProfileModal({ user, onSave, onClose }) {
+function EditProfileModal({ user, onSave, onRemove, onClose }) {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (user) setForm({ name: user.name || "", email: user.email || "", password: "", confirmPassword: "" });
@@ -32,6 +33,38 @@ function EditProfileModal({ user, onSave, onClose }) {
       setBusy(false);
     }
   };
+
+  const handleDelete = async () => {
+    setBusy(true);
+    try {
+      await onRemove();
+    } catch (err) {
+      setError(err.message);
+      setConfirmDelete(false);
+      setBusy(false);
+    }
+  };
+
+  if (confirmDelete) {
+    return (
+      <div className="modal-backdrop" onClick={() => setConfirmDelete(false)}>
+        <div className="confirm-sheet" onClick={(e) => e.stopPropagation()}>
+          <h3 className="confirm-msg mb-4">Delete your account?</h3>
+          <p className="text-muted small mb-4">
+            This action is permanent and will delete all your projects and tasks.
+          </p>
+          <div className="d-flex flex-column gap-2">
+            <button className="btn btn-danger fw-bold" onClick={handleDelete} disabled={busy}>
+              {busy ? "Deleting..." : "Yes, delete my account"}
+            </button>
+            <button className="btn btn-outline-dark" onClick={() => setConfirmDelete(false)} disabled={busy}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -91,11 +124,23 @@ function EditProfileModal({ user, onSave, onClose }) {
 
           {error && <p className="text-danger mt-3 mb-0" style={{ fontSize: "0.85rem" }}>{error}</p>}
 
-          <div className="d-flex justify-content-end gap-2 mt-4">
-            <button className="btn btn-outline-dark" type="button" onClick={onClose} disabled={busy}>Cancel</button>
-            <button className="btn btn-warning fw-bold" type="submit" disabled={busy}>
-              {busy ? "Saving..." : "Save changes"}
+          <hr className="my-4" style={{ opacity: 0.1 }} />
+
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <button
+              className="btn btn-link p-0 text-danger text-decoration-none fw-bold small"
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              disabled={busy}
+            >
+              Delete account
             </button>
+            <div className="d-flex gap-2">
+              <button className="btn btn-outline-dark" type="button" onClick={onClose} disabled={busy}>Cancel</button>
+              <button className="btn btn-warning fw-bold" type="submit" disabled={busy}>
+                {busy ? "Saving..." : "Save changes"}
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -103,7 +148,7 @@ function EditProfileModal({ user, onSave, onClose }) {
   );
 }
 
-export default function AppHeader({ user, activeView, onViewChange, onLogout, onUpdateProfile, onError }) {
+export default function AppHeader({ user, activeView, onViewChange, onLogout, onUpdateProfile, onRemoveAccount, onError }) {
   const [showEditProfile, setShowEditProfile] = useState(false);
 
   return (
@@ -112,7 +157,7 @@ export default function AppHeader({ user, activeView, onViewChange, onLogout, on
         <div className="d-flex align-items-center gap-4 flex-wrap">
           <div>
             <p className="eyebrow mb-1">Workspace</p>
-            <h1>Task board</h1>
+            <h1>Tasks</h1>
           </div>
           <nav className="header-nav">
             <button
@@ -120,7 +165,7 @@ export default function AppHeader({ user, activeView, onViewChange, onLogout, on
               type="button"
               onClick={() => onViewChange("board")}
             >
-              Board
+              Tasks
             </button>
             <button
               className={`nav-tab ${activeView === "calendar" ? "active" : ""}`}
@@ -148,6 +193,7 @@ export default function AppHeader({ user, activeView, onViewChange, onLogout, on
         <EditProfileModal
           user={user}
           onSave={onUpdateProfile}
+          onRemove={onRemoveAccount}
           onClose={() => setShowEditProfile(false)}
         />
       )}

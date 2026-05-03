@@ -13,9 +13,11 @@ export default function App() {
   const [projects, setProjects] = useState([]);
   const [projectPage, setProjectPage] = useState(1);
   const [projectTotalPages, setProjectTotalPages] = useState(1);
+  const [projectTotal, setProjectTotal] = useState(0);
   const [tags, setTags] = useState([]);
   const [tagPage, setTagPage] = useState(1);
   const [tagTotalPages, setTagTotalPages] = useState(1);
+  const [tagTotal, setTagTotal] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -37,12 +39,14 @@ export default function App() {
     const payload = await authedRequest(`/api/project?page=${p}&limit=${PROJECT_PAGE_SIZE}`);
     setProjects(payload.data);
     setProjectTotalPages(payload.meta?.total_pages || 1);
+    setProjectTotal(payload.meta?.total || 0);
   };
 
   const loadTags = async (p = tagPage) => {
     const payload = await authedRequest(`/api/tag?page=${p}&limit=${TAG_PAGE_SIZE}`);
     setTags(payload.data);
     setTagTotalPages(payload.meta?.total_pages || 1);
+    setTagTotal(payload.meta?.total || 0);
   };
 
   const loadTasks = async (projectId = selectedProjectId) => {
@@ -65,9 +69,11 @@ export default function App() {
       setUser(profilePayload.data);
       setProjects(projectPayload.data);
       setProjectTotalPages(projectPayload.meta?.total_pages || 1);
+      setProjectTotal(projectPayload.meta?.total || 0);
       setProjectPage(1);
       setTags(tagPayload.data);
       setTagTotalPages(tagPayload.meta?.total_pages || 1);
+      setTagTotal(tagPayload.meta?.total || 0);
       setTagPage(1);
       await loadTasks(projectIdForTasks);
     } finally {
@@ -117,8 +123,14 @@ export default function App() {
       body: JSON.stringify(values),
     });
 
+    if (mode === "register") {
+      notify("Registration successful! Please login to continue.");
+      return; // Stop here, don't set token
+    }
+
     localStorage.setItem(TOKEN_KEY, payload.token);
     setToken(payload.token);
+    if (payload.data) setUser(payload.data);
   };
 
   const logout = () => {
@@ -186,6 +198,7 @@ export default function App() {
       body: JSON.stringify(values),
     });
     await loadTasks();
+    await loadProjects();
   };
 
   const updateTask = async (taskId, values) => {
@@ -194,16 +207,19 @@ export default function App() {
       body: JSON.stringify(values),
     });
     await loadTasks();
+    await loadProjects();
   };
 
   const toggleTask = async (taskId) => {
     await authedRequest(`/api/task/${taskId}/toggle`, { method: "PATCH" });
     await loadTasks();
+    await loadProjects();
   };
 
   const deleteTask = async (taskId) => {
     await authedRequest(`/api/task/${taskId}`, { method: "DELETE" });
     await loadTasks();
+    await loadProjects();
   };
 
   const createSubtask = async (taskId, title) => {
@@ -212,20 +228,24 @@ export default function App() {
       body: JSON.stringify({ title }),
     });
     await loadTasks();
+    await loadProjects();
   };
 
   const toggleSubtask = async (taskId, subtaskId) => {
     await authedRequest(`/api/task/${taskId}/subtasks/${subtaskId}/toggle`, { method: "PATCH" });
     await loadTasks();
+    await loadProjects();
   };
 
   const deleteSubtask = async (taskId, subtaskId) => {
     await authedRequest(`/api/task/${taskId}/subtasks/${subtaskId}`, { method: "DELETE" });
     await loadTasks();
+    await loadProjects();
   };
 
   const selectProject = async (projectId) => {
     setSelectedProjectId(projectId);
+    setQuery("");
     await loadTasks(projectId);
   };
 
@@ -248,7 +268,15 @@ export default function App() {
     const id = projectId?._id || projectId;
     setActiveView("board");
     setSelectedProjectId(id);
+    setQuery("");
     await loadTasks(id);
+  };
+
+  const navigateToTask = async (task) => {
+    setActiveView("board");
+    setSelectedProjectId(task.project_id);
+    setQuery(task.title);
+    await loadTasks(task.project_id);
   };
 
   if (!token) {
@@ -304,11 +332,14 @@ export default function App() {
         onViewChange={setActiveView}
         onFetchByDateRange={fetchByDateRange}
         onNavigateToProject={navigateToProject}
+        onNavigateToTask={navigateToTask}
         projectPage={projectPage}
         projectTotalPages={projectTotalPages}
+        projectTotal={projectTotal}
         onProjectPageChange={changeProjectPage}
         tagPage={tagPage}
         tagTotalPages={tagTotalPages}
+        tagTotal={tagTotal}
         onTagPageChange={changeTagPage}
       />
       <Toast message={toast} onClose={() => setToast("")} />

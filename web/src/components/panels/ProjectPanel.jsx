@@ -26,24 +26,35 @@ export default function ProjectPanel({
   onError,
   projectPage,
   projectTotalPages,
+  projectTotal,
   onProjectPageChange,
 }) {
   const [pendingDelete, setPendingDelete] = useState(null);
-
-  const counts = tasks.reduce((acc, task) => {
-    const key = String(task.project_id?._id || task.project_id);
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {});
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingName, setEditingName] = useState("");
 
   const handleCreate = async (name) => {
     await onCreateProject({ name });
   };
 
-  const renameProject = async (project) => {
-    const name = window.prompt("Project name", project.name);
-    if (!name) return;
-    await onUpdateProject(project._id, { name, description: project.description || "" });
+  const startEditing = (project) => {
+    setEditingProjectId(project._id);
+    setEditingName(project.name);
+  };
+
+  const saveRename = async (project) => {
+    const trimmed = editingName.trim();
+    if (!trimmed || trimmed === project.name) {
+      setEditingProjectId(null);
+      return;
+    }
+    try {
+      await onUpdateProject(project._id, { name: trimmed, description: project.description || "" });
+    } catch (error) {
+      onError(error.message);
+    } finally {
+      setEditingProjectId(null);
+    }
   };
 
   const confirmDelete = async () => {
@@ -62,24 +73,11 @@ export default function ProjectPanel({
       <section className="panel-card">
         <div className="panel-heading">
           <h2>Projects</h2>
-          <span>{projects.length}</span>
         </div>
 
         <QuickCreateForm placeholder="New project" onSubmit={handleCreate} onError={onError} />
 
         <div className="vstack gap-2">
-          <button
-            className={`project-row ${selectedProjectId === "all" ? "active" : ""}`}
-            type="button"
-            onClick={() => onSelectProject("all").catch((error) => onError(error.message))}
-          >
-            <span>
-              <strong>All notes</strong>
-              <small>Everything active</small>
-            </span>
-            <b>{tasks.length}</b>
-          </button>
-
           {projects.map((project) => (
             <div className="project-row-wrap" key={project._id}>
               <button
@@ -88,25 +86,47 @@ export default function ProjectPanel({
                 onClick={() => onSelectProject(project._id).catch((error) => onError(error.message))}
               >
                 <span>
-                  <strong>{project.name}</strong>
-                  <small>{project.description || "Project"}</small>
+                  {editingProjectId === project._id ? (
+                    <input
+                      autoFocus
+                      className="form-control form-control-sm"
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onBlur={() => saveRename(project)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveRename(project);
+                        if (e.key === "Escape") setEditingProjectId(null);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <strong>{project.name}</strong>
+                  )}
                 </span>
-                <b>{counts[project._id] || 0}</b>
+                <b>{project.task_count || 0}</b>
               </button>
               <div className="row-actions">
                 <button
-                  className="btn btn-sm btn-outline-dark"
+                  className="btn btn-icon-sm"
                   type="button"
-                  onClick={() => renameProject(project).catch((error) => onError(error.message))}
+                  title="Rename"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startEditing(project);
+                  }}
                 >
-                  Rename
+                  ✎
                 </button>
                 <button
-                  className="btn btn-sm btn-outline-danger"
+                  className="btn btn-icon-sm danger"
                   type="button"
-                  onClick={() => setPendingDelete(project)}
+                  title="Delete"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPendingDelete(project);
+                  }}
                 >
-                  Delete
+                  ✕
                 </button>
               </div>
             </div>

@@ -23,15 +23,18 @@ export default function Dashboard(props) {
 
       <main className="container-fluid px-0">
         <div className="row g-4">
-          <aside className="col-12 col-xl-3">
-            <Sidebar {...props} />
-          </aside>
-          <section className="col-12 col-xl-9">
+          {!isCalendar && (
+            <aside className="col-12 col-xl-3">
+              <Sidebar {...props} />
+            </aside>
+          )}
+          <section className={isCalendar ? "col-12" : "col-12 col-xl-9"}>
             {isCalendar ? (
               <CalendarView
                 projects={props.projects}
                 onFetchByDateRange={props.onFetchByDateRange}
                 onNavigateToProject={props.onNavigateToProject}
+                onNavigateToTask={props.onNavigateToTask}
                 onError={props.onError}
               />
             ) : (

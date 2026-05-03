@@ -3,9 +3,17 @@ import { useEffect, useState } from "react";
 function getMonthRange(year, month) {
   const start = new Date(year, month, 1);
   const end = new Date(year, month + 1, 0);
+
+  const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
   return {
-    start: start.toISOString().slice(0, 10),
-    end: end.toISOString().slice(0, 10),
+    start: formatDate(start),
+    end: formatDate(end),
   };
 }
 
@@ -30,19 +38,29 @@ const MONTH_NAMES = [
 ];
 const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-export default function CalendarView({ projects, onFetchByDateRange, onNavigateToProject, onError }) {
+// Premium project colors
+const PROJECT_PALETTE = [
+  { bg: "rgba(45, 110, 159, 0.18)", text: "#1b4361", border: "rgba(45, 110, 159, 0.4)" }, // Blue
+  { bg: "rgba(47, 141, 108, 0.18)", text: "#114633", border: "rgba(47, 141, 108, 0.4)" }, // Green
+  { bg: "rgba(223, 112, 71, 0.18)", text: "#8b2a13", border: "rgba(223, 112, 71, 0.4)" }, // Orange
+  { bg: "rgba(242, 184, 66, 0.22)", text: "#725100", border: "rgba(242, 184, 66, 0.4)" }, // Gold
+  { bg: "rgba(123, 104, 238, 0.18)", text: "#3c2e8c", border: "rgba(123, 104, 238, 0.4)" }, // Purple
+  { bg: "rgba(255, 105, 180, 0.18)", text: "#8b1c4e", border: "rgba(255, 105, 180, 0.4)" }, // Pink
+];
+
+function getTaskColor(taskId) {
+  if (!taskId) return PROJECT_PALETTE[0];
+  const hash = taskId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return PROJECT_PALETTE[hash % PROJECT_PALETTE.length];
+}
+
+export default function CalendarView({ projects, onFetchByDateRange, onNavigateToProject, onNavigateToTask, onError }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
-  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (projects.length > 0 && !selectedProjectId) {
-      setSelectedProjectId(projects[0]._id);
-    }
-  }, [projects]);
 
   useEffect(() => {
     if (!selectedProjectId) return;
@@ -100,18 +118,8 @@ export default function CalendarView({ projects, onFetchByDateRange, onNavigateT
         <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
           <div>
             <p className="eyebrow mb-1">Calendar</p>
-            <h2 className="section-title mb-0">Tasks by date range</h2>
+            <h2 className="section-title mb-0">Monthly Schedule</h2>
           </div>
-          <select
-            className="form-select"
-            style={{ maxWidth: 220 }}
-            value={selectedProjectId}
-            onChange={(e) => setSelectedProjectId(e.target.value)}
-          >
-            {projects.map((p) => (
-              <option key={p._id} value={p._id}>{p.name}</option>
-            ))}
-          </select>
         </div>
 
         <div className="d-flex align-items-center gap-3 mb-3">
@@ -143,9 +151,9 @@ export default function CalendarView({ projects, onFetchByDateRange, onNavigateT
                   {day && <span className="cal-day-num">{day}</span>}
                   {entries.map(({ task, startDay, endDay, isStart, isEnd }) => {
                     const span = endDay - startDay + 1;
+                    const tColor = getTaskColor(task._id);
                     const cls = [
                       "cal-bar",
-                      `priority-bar-${task.priority}`,
                       isStart ? "bar-start" : "bar-mid",
                       isEnd   ? "bar-end"   : "",
                     ].filter(Boolean).join(" ");
@@ -154,10 +162,22 @@ export default function CalendarView({ projects, onFetchByDateRange, onNavigateT
                       <button
                         key={task._id + "-" + day}
                         className={cls}
+                        style={{
+                          backgroundColor: tColor.bg,
+                          color: tColor.text,
+                          borderLeft: isStart ? `3px solid ${tColor.border}` : "none",
+                        }}
                         title={task.title + (span > 1 ? " \u00b7 " + span + " days" : "")}
-                        onClick={() => onNavigateToProject(task.project_id)}
+                        onClick={() => onNavigateToTask(task)}
                       >
-                        {isStart ? task.title : "\u00a0"}
+                        {isStart || isEnd ? (
+                          <span className="d-flex align-items-center gap-1">
+                            {task.title}
+                            {isEnd && !isStart && " (End)"}
+                          </span>
+                        ) : (
+                          "\u00a0"
+                        )}
                       </button>
                     );
                   })}
