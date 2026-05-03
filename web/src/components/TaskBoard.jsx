@@ -3,6 +3,8 @@ import TaskCard from "./TaskCard";
 
 export default function TaskBoard({
   visibleTasks,
+  projects,
+  tags,
   page,
   totalPages,
   loading,
@@ -30,6 +32,8 @@ export default function TaskBoard({
           <TaskCard
             key={task._id}
             task={task}
+            projects={projects}
+            tags={tags}
             onUpdateTask={onUpdateTask}
             onToggleTask={onToggleTask}
             onDeleteTask={onDeleteTask}

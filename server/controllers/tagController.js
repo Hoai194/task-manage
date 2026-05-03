@@ -1,9 +1,21 @@
 import Tag from "../models/tagModel.js";
+import { paginate } from "../utils/paginate.js";
 
 export const getTags = async (req, res) => {
   try {
-    const tags = await Tag.find({ user_id: req.userId }).sort({ name: 1 });
-    res.json({ success: true, count: tags.length, data: tags });
+    const { page, limit } = req.query;
+    const result = await paginate(Tag, {
+      filter: { user_id: req.userId },
+      sort_by: 'name',
+      sort_order: 'asc',
+      page,
+      limit: limit || 20,
+    });
+    res.json({
+      success: true,
+      data: result.data,
+      meta: { total: result.total, page: result.page, limit: result.limit, total_pages: result.total_pages },
+    });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

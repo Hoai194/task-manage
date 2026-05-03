@@ -19,7 +19,8 @@ const taskRouter = Router();
 taskRouter.use(auth); 
 
 taskRouter.get('/', getTasks);           
-taskRouter.post('/', createTask);        
+taskRouter.post('/', createTask);
+taskRouter.get('/calendar', getTasksByDateRange);
 taskRouter.put('/:id', updateTask);      
 taskRouter.delete('/:id', deleteTask);   
 taskRouter.patch('/:id/toggle', toggleTask);
@@ -30,7 +31,5 @@ taskRouter.post('/:id/subtasks', createSubTask);
 taskRouter.patch('/:id/subtasks/:subId/toggle', toggleSubTask); 
 taskRouter.put('/:id/subtasks/:subId', updateSubTask); 
 taskRouter.delete('/:id/subtasks/:subId', deleteSubTask);  
-
-taskRouter.get('/calendar', getTasksByDateRange)
 
 export default taskRouter;

@@ -1,9 +1,21 @@
 import Project from '../models/projectModel.js';
+import { paginate } from '../utils/paginate.js';
 
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ user_id: req.userId });
-    res.json({ success: true, count: projects.length, data: projects });
+    const { page, limit } = req.query;
+    const result = await paginate(Project, {
+      filter: { user_id: req.userId },
+      sort_by: 'created_at',
+      sort_order: 'desc',
+      page,
+      limit: limit || 20,
+    });
+    res.json({
+      success: true,
+      data: result.data,
+      meta: { total: result.total, page: result.page, limit: result.limit, total_pages: result.total_pages },
+    });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

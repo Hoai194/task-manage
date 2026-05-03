@@ -178,6 +178,18 @@ button {
   font-weight: 800;
 }
 
+button.profile-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.78);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+button.profile-chip:hover {
+  background: rgba(242, 184, 66, 0.22);
+}
+
 .sidebar-stack {
   display: grid;
   gap: 18px;
@@ -492,4 +504,234 @@ button {
   .task-actions .form-select {
     width: 100%;
   }
+}
+
+/* ── Navigation tabs ── */
+.header-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.nav-tab {
+  padding: 8px 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.9rem;
+  background: rgba(255, 250, 240, 0.6);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  min-height: 38px;
+}
+
+.nav-tab.active {
+  border-color: rgba(223, 112, 71, 0.6);
+  color: var(--ink);
+  background: rgba(223, 112, 71, 0.18);
+}
+
+/* ── Task edit modal ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(29, 26, 21, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 250, 240, 0.97);
+  box-shadow: var(--shadow);
+  animation: rise 220ms ease both;
+}
+
+/* ── Calendar ── */
+.calendar-section {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-day-name {
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cal-cell {
+  min-height: 90px;
+  padding: 4px 0 4px 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.42);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.cal-cell.cal-empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+.cal-cell.cal-today {
+  border-color: rgba(223, 112, 71, 0.5);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.cal-day-num {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.cal-today .cal-day-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+
+.cal-task-pill {
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(47, 141, 108, 0.16);
+  color: #114633;
+  border: 1px solid rgba(47, 141, 108, 0.3);
+}
+
+.cal-task-pill.priority-pill-high {
+  background: rgba(223, 112, 71, 0.18);
+  color: #8b2a13;
+  border-color: rgba(223, 112, 71, 0.4);
+}
+
+.cal-task-pill.priority-pill-medium {
+  background: rgba(242, 184, 66, 0.22);
+  color: #725100;
+  border-color: rgba(242, 184, 66, 0.4);
+}
+
+/* ── Calendar task bars (multi-day) ── */
+.cal-bar {
+  display: block;
+  width: calc(100% + 4px);
+  margin-left: -4px;
+  padding: 3px 6px 3px 8px;
+  border: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  min-height: 0;
+  line-height: 1.5;
+  border-radius: 0;
+  background: rgba(47, 141, 108, 0.22);
+  color: #114633;
+}
+
+/* ngày đầu: bo góc trái */
+.cal-bar.bar-start {
+  border-radius: 6px 0 0 6px;
+}
+
+/* ngày cuối: bo góc phải, không kéo sang ô tiếp */
+.cal-bar.bar-end,
+.cal-bar.bar-mid.bar-end {
+  border-radius: 0 6px 6px 0;
+  width: calc(100% - 2px);
+  margin-right: 2px;
+}
+
+/* task 1 ngày: bo tròn cả 2 đầu */
+.cal-bar.bar-start.bar-end {
+  border-radius: 6px;
+  width: calc(100% - 2px);
+  margin-right: 2px;
+}
+
+.cal-bar:hover {
+  filter: brightness(0.88);
+}
+
+.cal-bar.priority-bar-high {
+  background: rgba(223, 112, 71, 0.32);
+  color: #8b2a13;
+}
+
+.cal-bar.priority-bar-medium {
+  background: rgba(242, 184, 66, 0.36);
+  color: #725100;
+}
+
+.cal-bar.priority-bar-low {
+  background: rgba(47, 141, 108, 0.22);
+  color: #114633;
+}
+
+/* ── Confirm modal ── */
+.confirm-sheet {
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 250, 240, 0.97);
+  box-shadow: var(--shadow);
+  animation: rise 200ms ease both;
+}
+
+.confirm-msg {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ── Panel pagination ── */
+.panel-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
 }

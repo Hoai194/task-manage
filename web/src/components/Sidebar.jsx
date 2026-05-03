@@ -13,6 +13,9 @@ export default function Sidebar(props) {
         onUpdateProject={props.onUpdateProject}
         onDeleteProject={props.onDeleteProject}
         onError={props.onError}
+        projectPage={props.projectPage}
+        projectTotalPages={props.projectTotalPages}
+        onProjectPageChange={props.onProjectPageChange}
       />
       <TagPanel
         tags={props.tags}
@@ -20,6 +23,9 @@ export default function Sidebar(props) {
         onUpdateTag={props.onUpdateTag}
         onDeleteTag={props.onDeleteTag}
         onError={props.onError}
+        tagPage={props.tagPage}
+        tagTotalPages={props.tagTotalPages}
+        onTagPageChange={props.onTagPageChange}
       />
     </div>
   );

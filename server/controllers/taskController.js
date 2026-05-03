@@ -209,14 +209,21 @@ export const getTasksByDateRange = async (req, res) => {
     if (!project_id) return res.status(400).json({ success: false, message: "project_id is required" });
     if (!start || !end) return res.status(400).json({ success: false, message: "start and end date are required" });
 
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    // Lấy task có start_date hoặc due_date nằm trong range,
+    // hoặc task kéo dài qua toàn bộ range (start trước, end sau)
     const tasks = await Task.find({
       project_id,
-      due_date: {
-        $gte: new Date(start),
-        $lte: new Date(end),
-      },
+      status: { $ne: "done" },
+      $or: [
+        { due_date:   { $gte: startDate, $lte: endDate } },
+        { start_date: { $gte: startDate, $lte: endDate } },
+        { start_date: { $lte: startDate }, due_date: { $gte: endDate } },
+      ],
     })
-      .sort({ due_date: 1 })
+      .sort({ start_date: 1, due_date: 1 })
       .lean();
 
     res.json({ success: true, data: tasks });

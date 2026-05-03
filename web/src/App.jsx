@@ -11,7 +11,11 @@ export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
   const [user, setUser] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [projectPage, setProjectPage] = useState(1);
+  const [projectTotalPages, setProjectTotalPages] = useState(1);
   const [tags, setTags] = useState([]);
+  const [tagPage, setTagPage] = useState(1);
+  const [tagTotalPages, setTagTotalPages] = useState(1);
   const [tasks, setTasks] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -21,9 +25,25 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeView, setActiveView] = useState("board");
 
   const notify = (message) => setToast(message);
   const authedRequest = (path, options = {}) => request(path, options, token);
+
+  const PROJECT_PAGE_SIZE = 5;
+  const TAG_PAGE_SIZE = 10;
+
+  const loadProjects = async (p = projectPage) => {
+    const payload = await authedRequest(`/api/project?page=${p}&limit=${PROJECT_PAGE_SIZE}`);
+    setProjects(payload.data);
+    setProjectTotalPages(payload.meta?.total_pages || 1);
+  };
+
+  const loadTags = async (p = tagPage) => {
+    const payload = await authedRequest(`/api/tag?page=${p}&limit=${TAG_PAGE_SIZE}`);
+    setTags(payload.data);
+    setTagTotalPages(payload.meta?.total_pages || 1);
+  };
 
   const loadTasks = async (projectId = selectedProjectId) => {
     const searchParams = new URLSearchParams();
@@ -38,13 +58,17 @@ export default function App() {
     try {
       const [profilePayload, projectPayload, tagPayload] = await Promise.all([
         authedRequest("/api/user/me"),
-        authedRequest("/api/project"),
-        authedRequest("/api/tag"),
+        authedRequest(`/api/project?page=1&limit=${PROJECT_PAGE_SIZE}`),
+        authedRequest(`/api/tag?page=1&limit=${TAG_PAGE_SIZE}`),
       ]);
 
       setUser(profilePayload.data);
       setProjects(projectPayload.data);
+      setProjectTotalPages(projectPayload.meta?.total_pages || 1);
+      setProjectPage(1);
       setTags(tagPayload.data);
+      setTagTotalPages(tagPayload.meta?.total_pages || 1);
+      setTagPage(1);
       await loadTasks(projectIdForTasks);
     } finally {
       setLoading(false);
@@ -120,47 +144,40 @@ export default function App() {
   };
 
   const createProject = async (values) => {
-    await authedRequest("/api/project", {
-      method: "POST",
-      body: JSON.stringify(values),
-    });
+    await authedRequest("/api/project", { method: "POST", body: JSON.stringify(values) });
     await loadWorkspace();
   };
 
   const updateProject = async (projectId, values) => {
-    await authedRequest(`/api/project/${projectId}`, {
-      method: "PUT",
-      body: JSON.stringify(values),
-    });
-    await loadWorkspace();
+    await authedRequest(`/api/project/${projectId}`, { method: "PUT", body: JSON.stringify(values) });
+    await loadProjects(projectPage);
   };
 
   const deleteProject = async (projectId) => {
     await authedRequest(`/api/project/${projectId}`, { method: "DELETE" });
     const nextSelectedProjectId = selectedProjectId === projectId ? "all" : selectedProjectId;
     setSelectedProjectId(nextSelectedProjectId);
-    await loadWorkspace(nextSelectedProjectId);
+    const nextPage = projects.length === 1 && projectPage > 1 ? projectPage - 1 : projectPage;
+    setProjectPage(nextPage);
+    await loadProjects(nextPage);
+    await loadTasks(nextSelectedProjectId);
   };
 
   const createTag = async (values) => {
-    await authedRequest("/api/tag", {
-      method: "POST",
-      body: JSON.stringify(values),
-    });
-    await loadWorkspace();
+    await authedRequest("/api/tag", { method: "POST", body: JSON.stringify(values) });
+    await loadTags(tagPage);
   };
 
   const updateTag = async (tagId, values) => {
-    await authedRequest(`/api/tag/${tagId}`, {
-      method: "PUT",
-      body: JSON.stringify(values),
-    });
-    await loadWorkspace();
+    await authedRequest(`/api/tag/${tagId}`, { method: "PUT", body: JSON.stringify(values) });
+    await loadTags(tagPage);
   };
 
   const deleteTag = async (tagId) => {
     await authedRequest(`/api/tag/${tagId}`, { method: "DELETE" });
-    await loadWorkspace();
+    const nextPage = tags.length === 1 && tagPage > 1 ? tagPage - 1 : tagPage;
+    setTagPage(nextPage);
+    await loadTags(nextPage);
   };
 
   const createTask = async (values) => {
@@ -212,6 +229,28 @@ export default function App() {
     await loadTasks(projectId);
   };
 
+  const changeProjectPage = async (p) => {
+    setProjectPage(p);
+    await loadProjects(p);
+  };
+
+  const changeTagPage = async (p) => {
+    setTagPage(p);
+    await loadTags(p);
+  };
+
+  const fetchByDateRange = async (projectId, start, end) => {
+    const payload = await authedRequest(`/api/task/calendar?project_id=${projectId}&start=${start}&end=${end}`);
+    return payload.data;
+  };
+
+  const navigateToProject = async (projectId) => {
+    const id = projectId?._id || projectId;
+    setActiveView("board");
+    setSelectedProjectId(id);
+    await loadTasks(id);
+  };
+
   if (!token) {
     return (
       <>
@@ -261,6 +300,16 @@ export default function App() {
         onSortDirectionChange={setSortDirection}
         onPageChange={setPage}
         onError={notify}
+        activeView={activeView}
+        onViewChange={setActiveView}
+        onFetchByDateRange={fetchByDateRange}
+        onNavigateToProject={navigateToProject}
+        projectPage={projectPage}
+        projectTotalPages={projectTotalPages}
+        onProjectPageChange={changeProjectPage}
+        tagPage={tagPage}
+        tagTotalPages={tagTotalPages}
+        onTagPageChange={changeTagPage}
       />
       <Toast message={toast} onClose={() => setToast("")} />
     </>

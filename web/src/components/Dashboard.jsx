@@ -1,15 +1,20 @@
 import AppFooter from "./layout/AppFooter";
 import AppHeader from "./layout/AppHeader";
+import CalendarView from "./CalendarView";
 import Sidebar from "./Sidebar";
 import TaskBoard from "./TaskBoard";
 import TaskComposer from "./TaskComposer";
 import TaskToolbar from "./TaskToolbar";
 
 export default function Dashboard(props) {
+  const isCalendar = props.activeView === "calendar";
+
   return (
     <div className="app-shell">
       <AppHeader
         user={props.user}
+        activeView={props.activeView}
+        onViewChange={props.onViewChange}
         onLogout={props.onLogout}
         onUpdateProfile={props.onUpdateProfile}
         onRemoveAccount={props.onRemoveAccount}
@@ -21,27 +26,37 @@ export default function Dashboard(props) {
           <aside className="col-12 col-xl-3">
             <Sidebar {...props} />
           </aside>
-
           <section className="col-12 col-xl-9">
-            <TaskComposer
-              projects={props.projects}
-              tags={props.tags}
-              selectedProjectId={props.selectedProjectId}
-              onCreateTask={props.onCreateTask}
-              onError={props.onError}
-            />
-            <TaskToolbar
-              query={props.query}
-              statusFilter={props.statusFilter}
-              sortBy={props.sortBy}
-              sortDirection={props.sortDirection}
-              allVisibleCount={props.allVisibleCount}
-              onQueryChange={props.onQueryChange}
-              onStatusFilterChange={props.onStatusFilterChange}
-              onSortByChange={props.onSortByChange}
-              onSortDirectionChange={props.onSortDirectionChange}
-            />
-            <TaskBoard {...props} />
+            {isCalendar ? (
+              <CalendarView
+                projects={props.projects}
+                onFetchByDateRange={props.onFetchByDateRange}
+                onNavigateToProject={props.onNavigateToProject}
+                onError={props.onError}
+              />
+            ) : (
+              <>
+                <TaskComposer
+                  projects={props.projects}
+                  tags={props.tags}
+                  selectedProjectId={props.selectedProjectId}
+                  onCreateTask={props.onCreateTask}
+                  onError={props.onError}
+                />
+                <TaskToolbar
+                  query={props.query}
+                  statusFilter={props.statusFilter}
+                  sortBy={props.sortBy}
+                  sortDirection={props.sortDirection}
+                  allVisibleCount={props.allVisibleCount}
+                  onQueryChange={props.onQueryChange}
+                  onStatusFilterChange={props.onStatusFilterChange}
+                  onSortByChange={props.onSortByChange}
+                  onSortDirectionChange={props.onSortDirectionChange}
+                />
+                <TaskBoard {...props} />
+              </>
+            )}
           </section>
         </div>
       </main>
