@@ -32,7 +32,7 @@ export default function AuthView({ onSubmit, onError }) {
           <span>React components</span>
           <span>Bootstrap grid</span>
           <span>JWT auth</span>
-          <span>REST client</span>
+          <span>REST API</span>
         </div>
       </section>
 

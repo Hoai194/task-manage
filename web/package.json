@@ -1,5 +1,5 @@
 {
-  "name": "task-manage-client",
+  "name": "task-manage-web",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -7,13 +7,13 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "vite build client",
-    "build:client": "vite build client",
-    "dev:client": "vite client --host 0.0.0.0",
+    "build": "vite build",
+    "build:web": "vite build",
+    "dev:web": "vite --host 0.0.0.0",
     "dev:server": "npm --prefix ../server run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "vite client --host 0.0.0.0",
-    "dev": "vite client --host 0.0.0.0"
+    "start": "vite --host 0.0.0.0",
+    "dev": "vite --host 0.0.0.0"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.0.1",

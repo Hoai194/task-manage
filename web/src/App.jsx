@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { request } from "./api/client";
+import { request } from "./api/web";
 import AuthView from "./components/AuthView";
 import Dashboard from "./components/Dashboard";
 import Toast from "./components/Toast";
